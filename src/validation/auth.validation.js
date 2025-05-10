@@ -39,7 +39,23 @@ const loginValidation = [
     validateRequest
 ];
 
+const forgotPasswordValidation = [
+    expressValidator.body("email")
+      .notEmpty().withMessage("Email is required")
+      .isEmail().withMessage("Please provide a valid email address"),
+    validateRequest
+];
+
+const resetPasswordValidation = [
+    expressValidator.body("password")
+      .notEmpty().withMessage("Password is required")
+      .isLength({min: 6}).withMessage("Password must be at least 6 characters long"),
+    validateRequest
+];
+
 module.exports = {
     registerValidation,
     loginValidation,
+    forgotPasswordValidation,
+    resetPasswordValidation
 }

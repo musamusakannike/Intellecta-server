@@ -1,23 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const {registerValidation, loginValidation} = require("../validation/auth.validation");
-const {register, login} = require("../controllers/auth.controller");
+const {registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation} = require("../validation/auth.validation");
+const {register, login, verifyEmail, forgotPassword, resetPassword} = require("../controllers/auth.controller");
 
 router.post("/register", registerValidation, register);
 
 router.post("/login", loginValidation, login);
 
-router.get("/verify-email", (req, res) => {
-    res.send("Verify Email");
-});
+router.get("/verify-email", verifyEmail);
 
-router.post("/forgot-password", (req, res) => {
-    res.send("Forgot Password");
-});
+router.post("/forgot-password", forgotPasswordValidation, forgotPassword);
 
-router.post("/reset-password", (req, res) => {
-    res.send("Reset Password");
-});
+// Handle both GET and POST requests for reset-password
+router.get("/reset-password", resetPassword);
+router.post("/reset-password", resetPasswordValidation, resetPassword);
 
 router.post("/logout", (req, res) => {
     res.send("Logout");
