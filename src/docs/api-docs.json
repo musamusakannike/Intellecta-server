@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "Intellecta Learning Platform API",
+    "description": "API documentation for the Intellecta Learning Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "name": "John Doe",
+                "email": "john@example.com",
+                "password": "password123",
+                "role": "student"
+              }
+            },
+            "description": "Register a new user"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": {
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "password": "password123",
+                    "role": "student"
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [],
+              "body": {
+                "status": "success",
+                "data": {
+                  "user": {
+                    "_id": "user_id",
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "role": "student"
+                  },
+                  "token": "jwt_token"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "email": "john@example.com",
+                "password": "password123"
+              }
+            },
+            "description": "Login user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses?search=javascript&category=programming&minPrice=10&maxPrice=100&isFeatured=true&sortBy=price&sortOrder=asc&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "javascript"
+                },
+                {
+                  "key": "category",
+                  "value": "programming"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "10"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "100"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "true"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "price"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all courses with filtering and pagination"
+          }
+        },
+        {
+          "name": "Create Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "title": "JavaScript Fundamentals",
+                "description": "Learn JavaScript from scratch",
+                "image": "https://example.com/js-image.jpg",
+                "category": "programming",
+                "price": 49.99,
+                "isFeatured": true
+              }
+            },
+            "description": "Create a new course (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:courseId/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":courseId", "reviews"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "course_id"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "rating": 5,
+                "title": "Great Course!",
+                "content": "This course was very helpful and well-structured."
+              }
+            },
+            "description": "Create a new review for a course"
+          }
+        },
+        {
+          "name": "Get Course Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:courseId/reviews?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":courseId", "reviews"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "course_id"
+                }
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                }
+              ]
+            },
+            "description": "Get all reviews for a course"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Topics",
+      "item": [
+        {
+          "name": "Create Topic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:courseId/topics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":courseId", "topics"],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "course_id"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "title": "Introduction to JavaScript",
+                "description": "Learn the basics of JavaScript",
+                "order": 1
+              }
+            },
+            "description": "Create a new topic in a course (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lessons",
+      "item": [
+        {
+          "name": "Create Lesson",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/topics/:topicId/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", "topics", ":topicId", "lessons"],
+              "variable": [
+                {
+                  "key": "topicId",
+                  "value": "topic_id"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "title": "Variables and Data Types",
+                "description": "Learn about JavaScript variables and data types",
+                "contents": [
+                  {
+                    "type": "text",
+                    "content": "JavaScript has several data types...",
+                    "order": 1
+                  },
+                  {
+                    "type": "code",
+                    "content": "let name = 'John';",
+                    "order": 2
+                  }
+                ],
+                "quiz": [
+                  {
+                    "question": "What is a variable?",
+                    "options": ["A container for storing data", "A function", "A loop", "A condition"],
+                    "correctAnswer": 0,
+                    "explanation": "A variable is a container for storing data values."
+                  }
+                ],
+                "order": 1
+              }
+            },
+            "description": "Create a new lesson in a topic (Admin only)"
+          }
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/lessons/:lessonId/quiz",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", "lessons", ":lessonId", "quiz"],
+              "variable": [
+                {
+                  "key": "lessonId",
+                  "value": "lesson_id"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": {
+                "answers": [0, 1, 2]
+              }
+            },
+            "description": "Submit quiz answers for a lesson"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": "your_jwt_token"
+    }
+  ]
+} 
