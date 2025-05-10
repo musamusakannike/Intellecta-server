@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 
 const connectDB = require("./config/db.config");
+const authRoutes = require("./routes/auth.routes");
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ app.use("/health", (req, res) => {
   res.status(200).json({ message: "OK" });
 });
 
+app.use("/api/v1/auth", authRoutes);
 
 module.exports = app;
