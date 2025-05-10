@@ -6,6 +6,7 @@ const helmet = require("helmet");
 
 const connectDB = require("./config/db.config");
 const authRoutes = require("./routes/auth.routes");
+const courseRoutes = require("./routes/course.routes");
 
 dotenv.config();
 
@@ -25,5 +26,5 @@ app.use("/health", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/v1/courses", courseRoutes);
 module.exports = app;
