@@ -15,8 +15,4 @@ router.post("/forgot-password", forgotPasswordValidation, forgotPassword);
 router.get("/reset-password", resetPassword);
 router.post("/reset-password", resetPasswordValidation, resetPassword);
 
-router.post("/logout", (req, res) => {
-    res.send("Logout");
-});
-
 module.exports = router;
