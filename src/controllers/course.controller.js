@@ -12,11 +12,141 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-// Get all courses
+// Get all courses with search and filtering
 exports.getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ isActive: true });
-    res.json(courses);
+    const {
+      search,
+      category,
+      minPrice,
+      maxPrice,
+      isFeatured,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    // Build query
+    const query = { isActive: true };
+
+    // Add search condition if search term is provided
+    if (search) {
+      query.$text = { $search: search };
+    }
+
+    // Add category filter
+    if (category) {
+      query.category = category;
+    }
+
+    // Add price range filter
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      query.price = {};
+      if (minPrice !== undefined) query.price.$gte = Number(minPrice);
+      if (maxPrice !== undefined) query.price.$lte = Number(maxPrice);
+    }
+
+    // Add featured filter
+    if (isFeatured !== undefined) {
+      query.isFeatured = isFeatured === 'true';
+    }
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+
+    // Execute query with sorting and pagination
+    const courses = await Course.find(query)
+      .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    // Get total count for pagination
+    const total = await Course.countDocuments(query);
+
+    res.json({
+      courses,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Advanced search with multiple criteria
+exports.advancedSearch = async (req, res) => {
+  try {
+    const {
+      searchTerm,
+      categories,
+      priceRange,
+      isFeatured,
+      hasTopics,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10
+    } = req.body;
+
+    // Build query
+    const query = { isActive: true };
+
+    // Add text search
+    if (searchTerm) {
+      query.$text = { $search: searchTerm };
+    }
+
+    // Add category filter (multiple categories)
+    if (categories && categories.length > 0) {
+      query.category = { $in: categories };
+    }
+
+    // Add price range
+    if (priceRange) {
+      query.price = {
+        $gte: priceRange.min || 0,
+        $lte: priceRange.max || Number.MAX_VALUE
+      };
+    }
+
+    // Add featured filter
+    if (isFeatured !== undefined) {
+      query.isFeatured = isFeatured;
+    }
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+
+    // Execute query with sorting and pagination
+    const courses = await Course.find(query)
+      .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    // If hasTopics is true, populate topics
+    if (hasTopics) {
+      await Course.populate(courses, {
+        path: 'topics',
+        match: { isActive: true },
+        select: 'title description order'
+      });
+    }
+
+    // Get total count for pagination
+    const total = await Course.countDocuments(query);
+
+    res.json({
+      courses,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
