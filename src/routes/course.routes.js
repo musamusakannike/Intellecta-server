@@ -9,7 +9,10 @@ const {
   courseCreationLimiter,
   reviewLimiter,
 } = require("../middlewares/rateLimit.middleware");
-const { courseCreationValidation } = require("../validation/course.validation");
+const {
+  courseCreationValidation,
+  topicCreationValidation,
+} = require("../validation/course.validation");
 
 // Course routes
 router.post(
@@ -57,6 +60,7 @@ router.delete(
 // Topic routes
 router.post(
   "/:courseId/topics",
+  topicCreationValidation,
   courseCreationLimiter,
   roleAuth(["admin", "superadmin"]),
   topicController.createTopic
