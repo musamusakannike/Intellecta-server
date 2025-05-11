@@ -12,6 +12,7 @@ const {
 const {
   courseCreationValidation,
   topicCreationValidation,
+  lessonCreationValidation,
 } = require("../validation/course.validation");
 
 // Course routes
@@ -81,10 +82,12 @@ router.delete(
 // Lesson routes
 router.post(
   "/topics/:topicId/lessons",
+  lessonCreationValidation,
   courseCreationLimiter,
   roleAuth(["admin", "superadmin"]),
   lessonController.createLesson
 );
+router.get("/lessons/:topicId", roleAuth(), lessonController.getAllLessons);
 router.get("/lessons/:id", roleAuth(), lessonController.getLesson);
 router.put(
   "/lessons/:id",

@@ -72,7 +72,84 @@ const topicCreationValidation = [
   validateRequest,
 ];
 
+const lessonCreationValidation = [
+  expressValidator
+    .body("title")
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ min: 3 })
+    .withMessage("Title must be at least 3 characters long"),
+  expressValidator
+    .body("description")
+    .notEmpty()
+    .withMessage("Description is required")
+    .isLength({ min: 10 })
+    .withMessage("Description must be at least 10 characters long"),
+  expressValidator
+    .body("topic")
+    .notEmpty()
+    .withMessage("Topic is required")
+    .isMongoId()
+    .withMessage("Topic must be a valid MongoDB ID"),
+  expressValidator
+    .body("contents")
+    .isArray()
+    .withMessage("Contents must be an array")
+    .custom((contents) => {
+      if (!contents || contents.length === 0) {
+        throw new Error("At least one content item is required");
+      }
+      return true;
+    }),
+  expressValidator
+    .body("contents.*.type")
+    .isIn(["text", "image", "code", "latex", "link", "video", "youtubeUrl"])
+    .withMessage("Invalid content type"),
+  expressValidator
+    .body("contents.*.content")
+    .notEmpty()
+    .withMessage("Content is required"),
+  expressValidator
+    .body("contents.*.order")
+    .isInt({ min: 0 })
+    .withMessage("Content order must be a non-negative integer"),
+  expressValidator
+    .body("quiz")
+    .optional()
+    .isArray()
+    .withMessage("Quiz must be an array"),
+  expressValidator
+    .body("quiz.*.question")
+    .if(expressValidator.body("quiz").exists())
+    .notEmpty()
+    .withMessage("Question is required"),
+  expressValidator
+    .body("quiz.*.options")
+    .if(expressValidator.body("quiz").exists())
+    .isArray({ min: 2 })
+    .withMessage("At least 2 options are required"),
+  expressValidator
+    .body("quiz.*.correctAnswer")
+    .if(expressValidator.body("quiz").exists())
+    .isInt({ min: 0 })
+    .withMessage("Correct answer must be a valid option index"),
+  expressValidator
+    .body("order")
+    .notEmpty()
+    .withMessage("Order is required")
+    .isInt({ min: 0 })
+    .withMessage("Order must be a non-negative integer"),
+  expressValidator
+    .body("isActive")
+    .optional()
+    .isBoolean()
+    .withMessage("isActive must be a boolean"),
+
+  validateRequest,
+];
+
 module.exports = {
   courseCreationValidation,
   topicCreationValidation,
+  lessonCreationValidation,
 };

@@ -12,6 +12,22 @@ exports.createLesson = async (req, res) => {
   }
 };
 
+// Get all lessons
+exports.getAllLessons = async (req, res) => {
+  try {
+    const { topicId } = req.params;
+    const lessons = await Lesson.find({ topic: topicId }).select('-contents -quiz');
+    res.json({ status: "success", message: "Lessons fetched successfully", lessons });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+
 // Get a lesson with access control
 exports.getLesson = async (req, res) => {
   try {
