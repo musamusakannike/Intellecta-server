@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  description: { type: String, required: true },
-  image: { type: String, required: true },
-  category: { type: String, required: true },
+  description: { type: String, required: false },
+  image: { type: String, required: false },
+  categories: [{ type: String, required: true }],
   price: { type: Number, required: true },
   isFeatured: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
@@ -26,7 +26,7 @@ const courseSchema = new mongoose.Schema({
 // Add text indexes for search
 courseSchema.index({ title: 'text', description: 'text' });
 // Add compound index for category and price filtering
-courseSchema.index({ category: 1, price: 1 });
+courseSchema.index({ categories: 1, price: 1 });
 // Add index for rating
 courseSchema.index({ 'ratingStats.averageRating': -1 });
 
