@@ -88,7 +88,7 @@ router.post(
   lessonController.createLesson
 );
 router.get("/lessons/:topicId", roleAuth(), lessonController.getAllLessons);
-router.get("/lessons/:id", roleAuth(), lessonController.getLesson);
+router.get("/lesson/:id", roleAuth(), lessonController.getLesson);
 router.put(
   "/lessons/:id",
   roleAuth(["admin", "superadmin"]),
@@ -101,7 +101,7 @@ router.delete(
 );
 router.post(
   "/lessons/:id/quiz",
-  roleAuth(["admin", "superadmin"]),
+  roleAuth(),
   lessonController.submitQuiz
 );
 
