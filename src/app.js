@@ -9,6 +9,7 @@ const connectDB = require("./config/db.config");
 const authRoutes = require("./routes/auth.routes");
 const courseRoutes = require("./routes/course.routes");
 const userRoutes = require("./routes/user.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 dotenv.config();
 
@@ -32,4 +33,6 @@ app.use("/health", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/courses", courseRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
+
 module.exports = app;
