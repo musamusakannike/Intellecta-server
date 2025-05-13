@@ -69,6 +69,7 @@ const login = async (req, res) => {
       profileImage: user.profileImage || "",
       isPremium: user.isPremium,
       joinedDate: user.createdAt,
+      role: user.role,
     };
 
     res.status(200).json({
