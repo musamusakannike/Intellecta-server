@@ -71,14 +71,12 @@ const login = async (req, res) => {
       joinedDate: user.createdAt,
     };
 
-    res
-      .status(200)
-      .json({
-        status: "success",
-        message: "Login successful",
-        token,
-        user: userWithoutPassword,
-      });
+    res.status(200).json({
+      status: "success",
+      message: "Login successful",
+      token,
+      user: userWithoutPassword,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ status: "error", message: "Internal server error" });
@@ -202,6 +200,30 @@ const verifyEmail = async (req, res) => {
         </body>
       </html>
     `);
+  }
+};
+
+const requestVerifyEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ status: "error", message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ status: "error", message: "User already verified" });
+    }
+
+    await sendVerificationEmail(user);
+
+    res
+      .status(200)
+      .json({ status: "success", message: "Verification email sent" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: "error", message: "Internal server error" });
   }
 };
 
@@ -584,4 +606,5 @@ module.exports = {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  requestVerifyEmail,
 };

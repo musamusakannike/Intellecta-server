@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {registerValidation, loginValidation, forgotPasswordValidation, resetPasswordValidation} = require("../validation/auth.validation");
-const {register, login, verifyEmail, forgotPassword, resetPassword} = require("../controllers/auth.controller");
+const {register, login, verifyEmail, requestVerifyEmail, forgotPassword, resetPassword} = require("../controllers/auth.controller");
 const { authLimiter } = require('../middlewares/rateLimit.middleware');
 
 router.post("/register", authLimiter, registerValidation, register);
@@ -9,6 +9,7 @@ router.post("/register", authLimiter, registerValidation, register);
 router.post("/login", authLimiter, loginValidation, login);
 
 router.get("/verify-email", verifyEmail);
+router.post("/request-verify-email", requestVerifyEmail);
 
 router.post("/forgot-password", authLimiter, forgotPasswordValidation, forgotPassword);
 
