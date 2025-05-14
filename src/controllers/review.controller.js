@@ -51,7 +51,7 @@ exports.getCourseReviews = async (req, res) => {
       course: courseId,
       isActive: true 
     })
-      .populate('user', 'name email')
+      .populate('user', 'username email')
       .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
       .skip(skip)
       .limit(Number(limit));
