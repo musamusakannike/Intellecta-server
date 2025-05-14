@@ -37,4 +37,38 @@ const updateUserValidation = [
   validateRequest,
 ];
 
-module.exports = { updateUserValidation };
+const adminUpdateUserValidation = [
+  expressValidator
+    .body("username")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("Username must be at least 3 characters long"),
+  expressValidator
+    .body("fullname")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("Fullname must be at least 3 characters long"),
+  expressValidator
+    .body("email")
+    .optional()
+    .isEmail()
+    .withMessage("Invalid email"),
+  expressValidator
+    .body("password")
+    .optional()
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long"),
+  expressValidator
+    .body("role")
+    .optional()
+    .isIn(["superadmin", "admin", "user"])
+    .withMessage("Invalid role"),
+  expressValidator
+    .body("isActive")
+    .optional()
+    .isBoolean()
+    .withMessage("isActive must be a boolean"),
+  validateRequest,
+];
+
+module.exports = { updateUserValidation, adminUpdateUserValidation };

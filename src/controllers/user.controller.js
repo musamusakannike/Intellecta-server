@@ -41,4 +41,53 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateUser, deleteUser };
+// ADMIN: List all users
+const listUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.status(200).json({ status: "success", data: users });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// ADMIN: Get user by ID
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    res.status(200).json({ status: "success", data: user });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// ADMIN: Update user by ID (role, isActive, etc.)
+const updateUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    res.status(200).json({ status: "success", data: user });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// ADMIN: Delete user by ID
+const deleteUserById = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    res.status(200).json({ status: "success", message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+module.exports = { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById };
