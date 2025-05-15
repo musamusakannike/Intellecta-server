@@ -41,6 +41,24 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Register or update Expo push token for the user
+const registerExpoPushToken = async (req, res) => {
+  try {
+    const { expoPushToken } = req.body;
+    if (!expoPushToken) {
+      return res.status(400).json({ status: "error", message: "Expo push token is required" });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { expoPushToken },
+      { new: true }
+    );
+    res.status(200).json({ status: "success", data: user });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 // ADMIN: List all users
 const listUsers = async (req, res) => {
   try {
@@ -90,4 +108,4 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById };
+module.exports = { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById, registerExpoPushToken };

@@ -52,6 +52,9 @@ const userSchema = new mongoose.Schema({
   profileImage: {
     type: String,
   },
+  expoPushToken: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

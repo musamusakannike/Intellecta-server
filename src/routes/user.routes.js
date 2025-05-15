@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById } = require("../controllers/user.controller");
+const { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById, registerExpoPushToken } = require("../controllers/user.controller");
 const { updateUserValidation, adminUpdateUserValidation } = require("../validation/user.validation");
 const roleAuth = require("../middlewares/auth.middleware");
 
@@ -8,6 +8,9 @@ const roleAuth = require("../middlewares/auth.middleware");
 router.get("/me", roleAuth(), getUser);
 router.patch("/me", roleAuth(), updateUserValidation, updateUser);
 router.delete("/me", roleAuth(), deleteUser);
+
+// Register Expo push token
+router.post("/expo-push-token", roleAuth(), registerExpoPushToken);
 
 // Admin user management
 router.get("/", roleAuth(["admin", "superadmin"]), listUsers);

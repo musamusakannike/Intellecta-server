@@ -9,7 +9,9 @@ const {
     deleteNotification,
     markAsRead,
     getUnreadNotifications,
-    markAllAsRead
+    markAllAsRead,
+    sendPushToAll,
+    sendPushToUsers
 } = require('../controllers/notification.controller');
 
 // Base route for notifications
@@ -30,5 +32,9 @@ router.route('/:id')
 router.post('/:id/read', roleAuth(), markAsRead);
 
 router.post("/mark-all-read", roleAuth(), markAllAsRead);
+
+// Push notification endpoints
+router.post('/push/broadcast', roleAuth(['admin', 'superadmin']), sendPushToAll);
+router.post('/push/users', roleAuth(['admin', 'superadmin']), sendPushToUsers);
 
 module.exports = router;

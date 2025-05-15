@@ -1,4 +1,35 @@
 const Notification = require("../models/notification.model");
+const User = require("../models/user.model");
+const { sendExpoPush } = require("../utils/expoPush");
+
+// Send push notification to all users (broadcast)
+const sendPushToAll = async (req, res) => {
+  try {
+    const { title, message, data } = req.body;
+    const users = await User.find({ expoPushToken: { $exists: true, $ne: null } });
+    const tokens = users.map(u => u.expoPushToken).filter(Boolean);
+    await sendExpoPush(tokens, { title, body: message, data });
+    res.status(200).json({ status: "success", message: "Push sent to all users" });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// Send push notification to specific users
+const sendPushToUsers = async (req, res) => {
+  try {
+    const { userIds, title, message, data } = req.body;
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ status: "error", message: "userIds required" });
+    }
+    const users = await User.find({ _id: { $in: userIds }, expoPushToken: { $exists: true, $ne: null } });
+    const tokens = users.map(u => u.expoPushToken).filter(Boolean);
+    await sendExpoPush(tokens, { title, body: message, data });
+    res.status(200).json({ status: "success", message: "Push sent to selected users" });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
 
 // Create a new notification (Admin only)
 const createNotification = async (req, res) => {
@@ -234,4 +265,6 @@ module.exports = {
   markAsRead,
   getUnreadNotifications,
   markAllAsRead,
+  sendPushToAll,
+  sendPushToUsers,
 };
