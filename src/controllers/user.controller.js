@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const Notification = require("../models/notification.model");
 
 const getUser = async (req, res) => {
   try {
@@ -108,4 +109,46 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById, registerExpoPushToken };
+// Handle screenshot detection and ban logic
+const handleScreenshot = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    if (!user.isActive) {
+      return res.status(403).json({ status: "error", message: "User is already banned" });
+    }
+    user.screenshotCount = (user.screenshotCount || 0) + 1;
+    let shotsLeft = 5 - user.screenshotCount;
+    let banned = false;
+    if (user.screenshotCount >= 5) {
+      user.isActive = false;
+      banned = true;
+      shotsLeft = 0;
+    }
+    await user.save();
+    // Send personal notification
+    const notificationMsg = banned
+      ? `You have been banned for suspiciously attempting piracy by taking screenshots on restricted pages.`
+      : `Screenshot detected on a restricted page. ${shotsLeft} screenshot${shotsLeft === 1 ? '' : 's'} left before ban.`;
+    await Notification.create({
+      title: banned ? "Account Banned" : "Screenshot Detected",
+      message: notificationMsg,
+      type: banned ? "error" : "warning",
+      createdBy: req.user ? req.user._id : user._id, // fallback if no req.user
+      readBy: [user._id],
+    });
+    res.status(200).json({
+      status: "success",
+      message: banned ? "User banned and notified." : `Screenshot detected. ${shotsLeft} left before ban.`,
+      banned,
+      shotsLeft,
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+module.exports = { getUser, updateUser, deleteUser, listUsers, getUserById, updateUserById, deleteUserById, registerExpoPushToken, handleScreenshot };

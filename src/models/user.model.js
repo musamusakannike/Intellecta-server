@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
   expoPushToken: {
     type: String,
   },
+  screenshotCount: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
