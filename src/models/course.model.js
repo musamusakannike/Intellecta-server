@@ -5,7 +5,6 @@ const courseSchema = new mongoose.Schema({
   description: { type: String, required: false },
   image: { type: String, required: false },
   categories: [{ type: String, required: true }],
-  price: { type: Number, required: true },
   isFeatured: { type: Boolean, default: false },
   isActive: { type: Boolean, default: true },
   ratingStats: {
