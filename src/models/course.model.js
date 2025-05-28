@@ -30,6 +30,14 @@ courseSchema.index({ categories: 1, price: 1 });
 // Add index for rating
 courseSchema.index({ 'ratingStats.averageRating': -1 });
 
+// Ensure all categories are stored in lowercase
+courseSchema.pre('save', function (next) {
+  if (this.categories && Array.isArray(this.categories)) {
+    this.categories = this.categories.map(cat => typeof cat === 'string' ? cat.toLowerCase() : cat);
+  }
+  next();
+});
+
 const Course = mongoose.model("Course", courseSchema);
 
 module.exports = Course;

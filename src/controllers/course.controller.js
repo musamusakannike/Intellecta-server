@@ -37,7 +37,7 @@ exports.getAllCourses = async (req, res) => {
 
     // Add category filter
     if (category) {
-      query.category = category;
+      query.categories = { $in: [category.toLowerCase()] };
     }
 
     // Add price range filter
@@ -63,6 +63,8 @@ exports.getAllCourses = async (req, res) => {
 
     // Get total count for pagination
     const total = await Course.countDocuments(query);
+
+    console.log(`Total courses found: ${total}`);
 
     res.json({
       courses,
@@ -201,4 +203,4 @@ exports.deleteCourse = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}; 
+};
