@@ -1,17 +1,17 @@
-const expressValidator = require("express-validator");
-const { validationResult } = expressValidator;
+const expressValidator = require("express-validator")
+const { validationResult } = expressValidator
 
 const validateRequest = (req, res, next) => {
-  const errors = validationResult(req);
+  const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    const firstError = errors.array()[0];
+    const firstError = errors.array()[0]
     return res.status(400).json({
       status: "error",
       message: firstError.msg,
-    });
+    })
   }
-  next();
-};
+  next()
+}
 
 const courseCreationValidation = [
   expressValidator
@@ -41,7 +41,7 @@ const courseCreationValidation = [
     .withMessage("Categories must be an array"),
 
   validateRequest,
-];
+]
 
 const topicCreationValidation = [
   expressValidator
@@ -70,7 +70,7 @@ const topicCreationValidation = [
     .withMessage("Course must be a valid MongoDB ID"),
 
   validateRequest,
-];
+]
 
 const lessonCreationValidation = [
   expressValidator
@@ -92,32 +92,40 @@ const lessonCreationValidation = [
     .isMongoId()
     .withMessage("Topic must be a valid MongoDB ID"),
   expressValidator
-    .body("contents")
+    .body("contentGroups")
+    .isArray()
+    .withMessage("Content groups must be an array")
+    .custom((contentGroups) => {
+      if (!contentGroups || contentGroups.length === 0) {
+        throw new Error("At least one content group is required")
+      }
+      return true
+    }),
+  expressValidator.body("contentGroups.*.title").notEmpty().withMessage("Content group title is required"),
+  expressValidator
+    .body("contentGroups.*.contents")
     .isArray()
     .withMessage("Contents must be an array")
     .custom((contents) => {
       if (!contents || contents.length === 0) {
-        throw new Error("At least one content item is required");
+        throw new Error("At least one content item is required in each group")
       }
-      return true;
+      return true
     }),
   expressValidator
-    .body("contents.*.type")
+    .body("contentGroups.*.order")
+    .isInt({ min: 0 })
+    .withMessage("Content group order must be a non-negative integer"),
+  expressValidator
+    .body("contentGroups.*.contents.*.type")
     .isIn(["text", "image", "code", "latex", "link", "video", "youtubeUrl"])
     .withMessage("Invalid content type"),
+  expressValidator.body("contentGroups.*.contents.*.content").notEmpty().withMessage("Content is required"),
   expressValidator
-    .body("contents.*.content")
-    .notEmpty()
-    .withMessage("Content is required"),
-  expressValidator
-    .body("contents.*.order")
+    .body("contentGroups.*.contents.*.order")
     .isInt({ min: 0 })
     .withMessage("Content order must be a non-negative integer"),
-  expressValidator
-    .body("quiz")
-    .optional()
-    .isArray()
-    .withMessage("Quiz must be an array"),
+  expressValidator.body("quiz").optional().isArray().withMessage("Quiz must be an array"),
   expressValidator
     .body("quiz.*.question")
     .if(expressValidator.body("quiz").exists())
@@ -139,17 +147,13 @@ const lessonCreationValidation = [
     .withMessage("Order is required")
     .isInt({ min: 0 })
     .withMessage("Order must be a non-negative integer"),
-  expressValidator
-    .body("isActive")
-    .optional()
-    .isBoolean()
-    .withMessage("isActive must be a boolean"),
+  expressValidator.body("isActive").optional().isBoolean().withMessage("isActive must be a boolean"),
 
   validateRequest,
-];
+]
 
 module.exports = {
   courseCreationValidation,
   topicCreationValidation,
   lessonCreationValidation,
-};
+}

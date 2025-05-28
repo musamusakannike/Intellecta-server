@@ -1,5 +1,5 @@
-const Lesson = require('../models/lesson.model');
-const UserProgress = require('../models/userProgress.model');
+const Lesson = require("../models/lesson.model");
+const UserProgress = require("../models/userProgress.model");
 
 // Create a new lesson
 exports.createLesson = async (req, res) => {
@@ -16,30 +16,31 @@ exports.createLesson = async (req, res) => {
 exports.getAllLessons = async (req, res) => {
   try {
     const { topicId } = req.params;
-    const lessons = await Lesson.find({ topic: topicId }).select('-contents -quiz');
-    res.json({ status: "success", message: "Lessons fetched successfully", lessons });
+    const lessons = await Lesson.find({ topic: topicId }).select(
+      "-contentGroups -quiz"
+    );
+    res.json({
+      status: "success",
+      message: "Lessons fetched successfully",
+      lessons,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
-
 
 // Get a lesson with access control
 exports.getLesson = async (req, res) => {
   try {
     const lesson = await Lesson.findById(req.params.id);
     if (!lesson) {
-      return res.status(404).json({ message: 'Lesson not found' });
+      return res.status(404).json({ message: "Lesson not found" });
     }
 
     // Check if this is the first lesson in the topic
     const isFirstLesson = await Lesson.findOne({
       topic: lesson.topic,
-      order: { $lt: lesson.order }
+      order: { $lt: lesson.order },
     });
 
     if (!isFirstLesson) {
@@ -50,13 +51,13 @@ exports.getLesson = async (req, res) => {
     // For other lessons, check user progress
     const userProgress = await UserProgress.findOne({
       user: req.user._id,
-      lesson: isFirstLesson._id
+      lesson: isFirstLesson._id,
     });
 
     if (!userProgress || !userProgress.completed) {
-      return res.status(403).json({ 
-        message: 'Complete the previous lesson first',
-        requiredLesson: isFirstLesson._id
+      return res.status(403).json({
+        message: "Complete the previous lesson first",
+        requiredLesson: isFirstLesson._id,
       });
     }
 
@@ -75,7 +76,7 @@ exports.updateLesson = async (req, res) => {
       { new: true }
     );
     if (!lesson) {
-      return res.status(404).json({ message: 'Lesson not found' });
+      return res.status(404).json({ message: "Lesson not found" });
     }
     res.json(lesson);
   } catch (error) {
@@ -92,9 +93,9 @@ exports.deleteLesson = async (req, res) => {
       { new: true }
     );
     if (!lesson) {
-      return res.status(404).json({ message: 'Lesson not found' });
+      return res.status(404).json({ message: "Lesson not found" });
     }
-    res.json({ message: 'Lesson deleted successfully' });
+    res.json({ message: "Lesson deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -105,7 +106,7 @@ exports.submitQuiz = async (req, res) => {
   try {
     const lesson = await Lesson.findById(req.params.id);
     if (!lesson) {
-      return res.status(404).json({ message: 'Lesson not found' });
+      return res.status(404).json({ message: "Lesson not found" });
     }
 
     const { answers } = req.body;
@@ -127,12 +128,12 @@ exports.submitQuiz = async (req, res) => {
     const userProgress = await UserProgress.findOneAndUpdate(
       {
         user: req.user._id,
-        lesson: lesson._id
+        lesson: lesson._id,
       },
       {
         completed: passed,
         quizScore: percentage,
-        lastAccessed: Date.now()
+        lastAccessed: Date.now(),
       },
       { upsert: true, new: true }
     );
@@ -140,9 +141,9 @@ exports.submitQuiz = async (req, res) => {
     res.json({
       score: percentage,
       passed,
-      userProgress
+      userProgress,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}; 
+};
